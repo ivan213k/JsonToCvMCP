@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="JsonToCvApi/JsonToCvApi.csproj" />
+  <Project Path="JsonToCvApi.Tests/JsonToCvApi.Tests.csproj" />
+</Solution>

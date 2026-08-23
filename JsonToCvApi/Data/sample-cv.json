@@ -1,0 +1,121 @@
+{
+  "fullName": "Alex Morgan",
+  "headline": ".NET Software Engineer",
+  "contact": {
+    "email": "alex.morgan@example.com",
+    "location": "Berlin, Germany",
+    "phone": "+15550100",
+    "linkedInUrl": "https://www.linkedin.com/in/alex-morgan-dev/"
+  },
+  "summary": ".NET Software Engineer with over 4 years of professional experience building backend systems on the .NET platform. Comfortable writing complex SQL Server queries and designing RESTful APIs with ASP.NET Core. Practical experience with microservice architectures and cloud-native development on Azure. Skilled in containerizing and orchestrating services with Docker and Kubernetes, and in building and maintaining CI/CD pipelines with Azure DevOps.",
+  "skills": [
+    "C#",
+    ".NET / .NET Framework",
+    "ASP.NET Web API",
+    "Microsoft SQL Server",
+    "Entity Framework",
+    "LINQ",
+    "SQL Server Profiler",
+    "Redis",
+    "Azure Cloud Platform",
+    "Docker & Kubernetes (AKS)",
+    "Azure DevOps",
+    "Helm Charts",
+    "Terraform",
+    "Blazor WASM / Server",
+    "WPF MVVM"
+  ],
+  "experience": [
+    {
+      "role": ".NET Software Engineer",
+      "company": "Nimbus Systems (Vertex Group)",
+      "startDate": "2022-10-01",
+      "endDate": null,
+      "projectName": "Vertex Connect Plugins",
+      "projectDescription": "Microservice-based solution serving as a framework for integrating with various third-party services via REST APIs. The platform provides a plugin-like experience for end users, allowing configuration and maintenance of external service connections. Emphasis was placed on scalability, modularity, and reusability across multiple client-specific implementations.",
+      "highlights": [
+        "Cut integration time for new external systems by roughly 60% by introducing standardized plugin interfaces and reusable components for common steps.",
+        "Led the migration from per-service Kubernetes deployment manifests to a unified Helm chart-based templating approach, reducing duplication across a dozen microservices."
+      ],
+      "technologies": [
+        ".NET 8",
+        "ASP.NET Web API",
+        "Entity Framework",
+        "Microsoft SQL Server",
+        "MassTransit",
+        "Azure Service Bus",
+        "Docker & Kubernetes (AKS)",
+        "Helm Charts",
+        "Azure DevOps"
+      ]
+    },
+    {
+      "role": ".NET Developer",
+      "company": "Nimbus Systems (Vertex Group)",
+      "startDate": "2021-09-01",
+      "endDate": "2022-10-01",
+      "projectName": "Vertex Connect",
+      "projectDescription": "B2B platform providing end-to-end workforce management solutions for temporary staffing agencies in the Netherlands and across Europe. Includes tools for onboarding, time and contract management, payroll processing, and more.",
+      "highlights": [
+        "Migrated a core microservice from in-memory caching to a distributed Redis cache, cutting memory usage roughly in half.",
+        "Modernized dependency management across a large monolith, upgrading well over 100 NuGet packages spanning dozens of projects."
+      ],
+      "technologies": [
+        "ASP.NET MVC",
+        "Web API",
+        "Entity Framework",
+        "Microsoft SQL Server",
+        "Dapper",
+        "Redis",
+        "MediatR",
+        "AutoMapper",
+        "Azure Cloud",
+        "Azure DevOps"
+      ]
+    },
+    {
+      "role": ".NET Developer",
+      "company": "Freelance",
+      "startDate": "2020-01-01",
+      "endDate": "2021-01-01",
+      "highlights": [],
+      "technologies": []
+    }
+  ],
+  "education": [
+    {
+      "degree": "Master's Degree, Computer Science",
+      "institution": "Northbridge State University",
+      "location": "Rivermouth, Freedonia",
+      "startDate": "2021-09-01",
+      "endDate": "2023-06-01"
+    },
+    {
+      "degree": "Bachelor's Degree, Computer Science",
+      "institution": "Northbridge State University",
+      "location": "Rivermouth, Freedonia",
+      "startDate": "2019-09-01",
+      "endDate": "2021-06-01"
+    },
+    {
+      "degree": "Junior Specialist, Software Development",
+      "institution": "Rivermouth Technical College",
+      "location": "Rivermouth, Freedonia",
+      "startDate": "2015-09-01",
+      "endDate": "2019-06-01"
+    }
+  ],
+  "certifications": [
+    {
+      "name": "AZ-900 — Microsoft Certified: Azure Fundamentals",
+      "issuedDate": "2024-03-01",
+      "url": "https://learn.microsoft.com/api/credentials/share/en-us/00000000/0000000000000000?sharingId=0000000000000000"
+    }
+  ],
+  "languages": [
+    { "name": "English", "level": "Native" },
+    { "name": "Spanish", "level": "Advanced" },
+    { "name": "French", "level": "Intermediate" },
+    { "name": "German", "level": "Elementary" }
+  ]
+}

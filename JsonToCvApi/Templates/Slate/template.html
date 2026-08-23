@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>CV</title>
+<style>
+/*__FONT_FACES__*/
+
+  * { box-sizing: border-box; }
+
+  @page {
+    size: A4;
+    margin: 16mm 18mm;
+  }
+
+  body {
+    margin: 0;
+    font-family: 'Roboto', Arial, sans-serif;
+    font-size: 10.3pt;
+    line-height: 1.5;
+    color: #2b2f31;
+  }
+
+  /* ---- Header ---- */
+
+  header {
+    margin-bottom: 5mm;
+  }
+
+  .name {
+    font-family: 'Libre Bodoni', Georgia, serif;
+    font-weight: 700;
+    font-size: 27pt;
+    line-height: 1.1;
+    color: #22262a;
+    margin: 0;
+  }
+
+  .headline {
+    font-size: 11.5pt;
+    font-weight: 700;
+    color: #3D4042;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    margin: 1.5mm 0 3mm;
+  }
+
+  .contact-line {
+    font-size: 9.3pt;
+    color: #4a4f52;
+  }
+
+  .contact-line a {
+    color: #4a4f52;
+    text-decoration: none;
+  }
+
+  .contact-line .sep {
+    color: #b9bdbf;
+    margin: 0 2mm;
+  }
+
+  header .rule {
+    border: none;
+    border-top: 1.4pt solid #3D4042;
+    margin: 4mm 0 0;
+  }
+
+  /* ---- Section headings ---- */
+
+  h2 {
+    font-size: 10.6pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #22262a;
+    border-bottom: 0.9pt solid #c7cacc;
+    padding-bottom: 1.2mm;
+    margin: 5.5mm 0 2.8mm;
+  }
+
+  section:first-of-type h2 { margin-top: 4mm; }
+
+  /* ---- Summary ---- */
+
+  .summary {
+    margin: 0;
+  }
+
+  /* ---- Chip lists (skills / languages) ---- */
+
+  .chip-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2mm 2.5mm;
+  }
+
+  .chip-list li {
+    background: #eef0f1;
+    color: #2b2f31;
+    padding: 1.1mm 3mm;
+    border-radius: 2.5mm;
+    font-size: 9.2pt;
+    white-space: nowrap;
+  }
+
+  /* ---- Experience / education entries ---- */
+
+  .entry {
+    break-inside: avoid;
+    margin-bottom: 4.2mm;
+  }
+
+  .entry:last-child { margin-bottom: 0; }
+
+  .entry-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 4mm;
+  }
+
+  .entry-role {
+    font-weight: 700;
+    font-size: 10.6pt;
+    color: #22262a;
+  }
+
+  .entry-meta {
+    font-size: 9.3pt;
+    color: #6b7178;
+    white-space: nowrap;
+  }
+
+  .entry-org {
+    font-size: 9.7pt;
+    color: #4a4f52;
+    margin-top: 0.3mm;
+  }
+
+  .entry-project {
+    margin: 1.8mm 0 0;
+    font-size: 9.7pt;
+    color: #33383b;
+  }
+
+  .entry-project strong { color: #22262a; }
+
+  .entry ul {
+    margin: 1.8mm 0 0;
+    padding-left: 4.2mm;
+  }
+
+  .entry li { margin-bottom: 0.8mm; }
+  .entry li:last-child { margin-bottom: 0; }
+
+  .entry-tech {
+    margin: 2mm 0 0;
+    font-size: 8.9pt;
+    color: #6b7178;
+  }
+
+  .entry-tech strong {
+    color: #4a4f52;
+    font-weight: 700;
+  }
+
+  /* ---- Education (lighter entries, no bullets) ---- */
+
+  .edu-entry {
+    break-inside: avoid;
+    margin-bottom: 3mm;
+  }
+
+  .edu-entry:last-child { margin-bottom: 0; }
+
+  .edu-degree {
+    font-weight: 700;
+    font-size: 10.1pt;
+    color: #22262a;
+  }
+
+  .edu-meta {
+    font-size: 9.3pt;
+    color: #4a4f52;
+    margin-top: 0.3mm;
+  }
+
+  /* ---- Certifications ---- */
+
+  .cert-entry {
+    break-inside: avoid;
+    margin-bottom: 2.5mm;
+  }
+
+  .cert-name {
+    font-weight: 700;
+    font-size: 10pt;
+    color: #22262a;
+  }
+
+  .cert-link {
+    display: block;
+    font-size: 8.9pt;
+    color: #4a4f52;
+    margin-top: 0.5mm;
+    word-break: break-all;
+  }
+
+</style>
+</head>
+<body>
+
+  <header>
+    <h1 class="name">{{ FullName }}</h1>
+    <div class="headline">{{ Headline }}</div>
+    <div class="contact-line">
+      {{ for part in ContactParts }}
+      {{ if !for.first }}<span class="sep">&middot;</span>{{ end }}
+      {{ if part.Href }}<a href="{{ part.Href }}">{{ part.Text }}</a>{{ else }}<span>{{ part.Text }}</span>{{ end }}
+      {{ end }}
+    </div>
+    <hr class="rule">
+  </header>
+
+  <section>
+    <h2>Summary</h2>
+    <p class="summary">{{ Summary }}</p>
+  </section>
+
+  <section>
+    <h2>Skills</h2>
+    <ul class="chip-list">
+      {{ for skill in Skills }}
+      <li>{{ skill }}</li>
+      {{ end }}
+    </ul>
+  </section>
+
+  <section>
+    <h2>Experience</h2>
+
+    {{ for exp in Experience }}
+    <div class="entry">
+      <div class="entry-head">
+        <span class="entry-role">{{ exp.Role }}</span>
+        <span class="entry-meta">{{ exp.DateRange }}</span>
+      </div>
+      <div class="entry-org">{{ exp.Company }}</div>
+      {{ if exp.ProjectName }}
+      <p class="entry-project">
+        <strong>Project: {{ exp.ProjectName }}.</strong> {{ exp.ProjectDescription }}
+      </p>
+      {{ end }}
+      {{ if exp.Highlights.size > 0 }}
+      <ul>
+        {{ for h in exp.Highlights }}
+        <li>{{ h }}</li>
+        {{ end }}
+      </ul>
+      {{ end }}
+      {{ if exp.Technologies.size > 0 }}
+      <p class="entry-tech">
+        <strong>Technologies:</strong> {{ for t in exp.Technologies }}{{ t }}{{ if !for.last }}, {{ end }}{{ end }}
+      </p>
+      {{ end }}
+    </div>
+    {{ end }}
+  </section>
+
+  <section>
+    <h2>Education</h2>
+
+    {{ for edu in Education }}
+    <div class="edu-entry">
+      <div class="edu-degree">{{ edu.Degree }}</div>
+      <div class="edu-meta">{{ edu.Institution }} &middot; {{ edu.Location }} &middot; {{ edu.DateRange }}</div>
+    </div>
+    {{ end }}
+  </section>
+
+  {{ if Certifications.size > 0 }}
+  <section>
+    <h2>Certifications</h2>
+    {{ for cert in Certifications }}
+    <div class="cert-entry">
+      <div class="cert-name">{{ cert.Name }} <span class="entry-meta" style="font-weight:400">({{ cert.IssuedDisplay }})</span></div>
+      {{ if cert.Url }}
+      <a class="cert-link" href="{{ cert.Url }}">{{ cert.UrlDisplay }}</a>
+      {{ end }}
+    </div>
+    {{ end }}
+  </section>
+  {{ end }}
+
+  <section>
+    <h2>Languages</h2>
+    <ul class="chip-list">
+      {{ for lang in Languages }}
+      <li>{{ lang.Name }} &mdash; {{ lang.Level }}</li>
+      {{ end }}
+    </ul>
+  </section>
+
+</body>
+</html>

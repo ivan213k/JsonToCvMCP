@@ -1,0 +1,28 @@
+## .NET
+bin/
+obj/
+*.user
+
+## Test results
+[Tt]est[Rr]esult*/
+*.trx
+*.coverage
+*.coveragexml
+
+## Rider / ReSharper
+.idea/
+*.sln.iml
+
+## Visual Studio
+.vs/
+
+## VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+## OS
+.DS_Store
+Thumbs.db

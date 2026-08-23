@@ -1,0 +1,8 @@
+**/bin/
+**/obj/
+.git/
+.github/
+.vscode/
+JsonToCvApi.Tests/
+*.md
+*.pdf
