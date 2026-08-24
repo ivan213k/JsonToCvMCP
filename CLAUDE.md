@@ -120,3 +120,32 @@ These were settled up front; don't re-litigate them without being asked.
 - `builder.Services.AddValidation()` applies to minimal-API endpoints only. MCP tools bind through the SDK's
   own dispatch and never hit that filter, so any validation that must hold for both entry points belongs in
   the service layer.
+
+## CI and deployment
+
+Patterned on `JobsProviderMCP`'s setup, minus what doesn't apply here (no Redis, so no `deploy/redis/`;
+no OpenTelemetry yet, so no `docker-compose.otel.yml`).
+
+- **`.github/workflows/pr-validation.yml`** — restore, build, test on every PR. **One real difference
+  from `JobsProviderMCP`'s copy of this workflow**: this project's tests render actual PDFs through
+  headless Chromium (`PdfRendererTests`, `CvRenderServiceTests`, `RenderCvToolTests` all exercise the
+  real `PdfRenderer`, not a fake), so the runner needs the browser binary before `dotnet test` runs —
+  hence the `--playwright-install` step, absent from the sibling repo's workflow because its tests don't
+  touch a browser at all. Confirmed this actually works, not just assumed: simulated the exact
+  restore/build/playwright-install/test sequence in a clean `mcr.microsoft.com/dotnet/sdk:10.0` container
+  (no pre-existing Playwright cache) before this was considered done — all 10 tests passed cold.
+- **`.github/workflows/docker-publish.yml`** — on push to `master` (this repo's default branch — note
+  `JobsProviderMCP`'s copy triggers on `main`, its default branch; don't copy that trigger verbatim into
+  other repos), computes a semver via GitVersion from commit messages, builds and pushes
+  `ivan213k/jsontocvapi:{semver,latest}` to Docker Hub. Needs `DOCKERHUB_USERNAME`/`DOCKERHUB_TOKEN`
+  repo secrets, not yet configured.
+- **`GitVersion.yaml`** — commit-message-driven semver bump rules (`feat:`/`fix:` prefixes, `+semver:`
+  trailers); copied verbatim from `JobsProviderMCP`, project-agnostic.
+- **`deploy/`** — server-side scripts, meant to be copied to a deploy host via `copy-to-server.sh` (run
+  locally) and then run *there*: `deploy.sh` pulls the latest (or a given) tag from Docker Hub and runs
+  it as a container; `watch.sh` polls Docker Hub for a newer tag than `.current-version` and calls
+  `deploy.sh` when one shows up — meant to run on a cron (e.g. `*/5 * * * *`) so new pushes to `master`
+  roll out without a manual step on the server. No secrets are passed to the container currently — unlike
+  `JobsProviderMCP`'s `deploy.sh` (which threads through a Redis connection string and an Apify token),
+  this app has none yet; `deploy/.env` (gitignored) is still read if present, for a future need (e.g. a
+  `HOST_PORT` override) without requiring a script change.

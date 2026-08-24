@@ -1,0 +1,10 @@
+# Ref: https://gitversion.net/docs/reference/configuration
+mode: ContinuousDelivery
+commit-message-incrementing: Enabled
+major-version-bump-message: '(\+semver:\s?(major|!|breaking))|(feat|fix)(\([^)]+\))?!:'
+minor-version-bump-message: '(\+semver:\s?(minor|feature))|feat(\([^)]+\))?:'
+patch-version-bump-message: '(\+semver:\s?(patch|fix))|fix(\([^)]+\))?:'
+branches: {}
+ignore:
+  sha: []
+merge-message-formats: {}
