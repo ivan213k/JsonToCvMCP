@@ -27,6 +27,8 @@ if [[ -z "$VERSION" ]]; then
     exit 1
 fi
 
+PREVIOUS_VERSION="$(cat "$state_file" 2>/dev/null || echo "")"
+
 echo "Deploying $IMAGE:$VERSION"
 docker pull "$IMAGE:$VERSION"
 
@@ -40,3 +42,10 @@ docker run -d \
 
 echo "$VERSION" > "$state_file"
 echo "Now running $IMAGE:$VERSION"
+
+docker images "$IMAGE" --format '{{.Tag}}' | sort -u | while read -r tag; do
+    if [[ "$tag" != "$VERSION" && "$tag" != "$PREVIOUS_VERSION" && "$tag" != "latest" ]]; then
+        echo "Removing old image $IMAGE:$tag"
+        docker rmi "$IMAGE:$tag" >/dev/null 2>&1 || echo "  (skipped, still in use)"
+    fi
+done
