@@ -1,0 +1,53 @@
+name: Docker Publish
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Install GitVersion
+        run: |
+          dotnet tool install --global GitVersion.Tool
+          echo "$HOME/.dotnet/tools" >> "$GITHUB_PATH"
+
+      - name: Determine version
+        id: gitversion
+        run: |
+          SEMVER=$(dotnet-gitversion /config GitVersion.yaml /showvariable SemVer)
+          echo "Resolved SemanticVersion: $SEMVER"
+          echo "semver=$SEMVER" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          build-args: |
+            SEMANTIC_VERSION=${{ steps.gitversion.outputs.semver }}
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/jsontocvapi:${{ steps.gitversion.outputs.semver }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/jsontocvapi:latest

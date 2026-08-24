@@ -1,0 +1,34 @@
+name: PR Validation
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Restore
+        run: dotnet restore JsonToCvApi.slnx
+
+      - name: Build
+        run: dotnet build JsonToCvApi.slnx --no-restore --configuration Release
+
+      # Unlike a typical unit-test suite, the tests here render real PDFs via headless Chromium
+      # (PdfRendererTests, CvRenderServiceTests, RenderCvToolTests) — the runner needs the browser
+      # binary present before `dotnet test`, the same install path the Dockerfile uses at image
+      # build time (see PdfRenderer.cs's ResolveHeadlessShellPath doc comment).
+      - name: Install Playwright browser
+        run: dotnet JsonToCvApi/bin/Release/net10.0/JsonToCvApi.dll --playwright-install
+
+      - name: Test
+        run: dotnet test JsonToCvApi.slnx --no-build --configuration Release
