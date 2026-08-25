@@ -24,32 +24,21 @@ public record ContactItem(
 public enum ContactKind
 {
     Address,
-
     Email,
-
     Phone,
-
     Linkedin,
-
     Github,
-
     Link,
-
     Social,
 }
 
 public static class ContactDescriptions
 {
-    public const string Kind = "What this contact entry is. Decides both the icon shown beside it and how the value is linked as well as order.";
+    public const string Kind = "What this contact entry is. Decides the icon shown beside it and the order.";
 
     public const string Value = "The contact detail itself.";
 
-    public const string Label = """
-        Optional text to display instead of the value — 'Portfolio' in place of 'jane.dev'. Omit it and
-        the text is derived from the value: link kinds show the URL with the scheme and any trailing
-        slash removed ('linkedin.com/in/jane'), other kinds show the value as given. The link always
-        points at the value, never at the label, so a label cannot change where the reader is sent.
-        """;
+    public const string Label = "Optional text to display instead of the value — 'Portfolio' in place of 'jane.dev'.";
 }
 
 public record ExperienceEntry(

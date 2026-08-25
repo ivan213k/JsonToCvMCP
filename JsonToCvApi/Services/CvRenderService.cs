@@ -77,16 +77,30 @@ public sealed class CvRenderService : ICvRenderService
 
     private static object BuildContactPart(ContactItem item)
     {
-        var kind = KindName(item.Kind);
-        var label = string.IsNullOrWhiteSpace(item.Label) ? null : Encode(item.Label);
+        var (text, href) = PartBuilders.GetValueOrDefault(item.Kind, DisplayAsLink)(item.Value);
+        return new
+        {
+            Kind = KindName(item.Kind),
+            Text = Encode(string.IsNullOrWhiteSpace(item.Label) ? text : item.Label),
+            Href = href,
+        };
+    }
 
-        if (item.Kind == ContactKind.Email) return new { Kind = kind, Text = label ?? Encode(item.Value), Href = SafeMailto(item.Value) };
-        if (item.Kind == ContactKind.Phone) return new { Kind = kind, Text = label ?? Encode(item.Value), Href = SafeTel(item.Value) };
-        if (item.Kind == ContactKind.Address) return new { Kind = kind, Text = label ?? Encode(item.Value), Href = (string?)null };
+    private static readonly Dictionary<ContactKind, Func<string, (string Text, string? Href)>> PartBuilders = new()
+    {
+        [ContactKind.Address] = value => (value, null),
+        [ContactKind.Email] = value => (value, SafeMailto(value)),
+        [ContactKind.Phone] = value => (value, SafeTel(value)),
+        [ContactKind.Link] = DisplayAsLink,
+        [ContactKind.Linkedin] = DisplayAsLink,
+        [ContactKind.Github] = DisplayAsLink,
+        [ContactKind.Social] = DisplayAsLink,
+    };
 
-        // Only shorten to a link label when it really is a link; anything else shows verbatim.
-        var href = SafeHref(item.Value);
-        return new { Kind = kind, Text = label ?? Encode(href is null ? item.Value : DisplayUrl(item.Value)), Href = href };
+    private static (string Text, string? Href) DisplayAsLink(string value)
+    {
+        var href = SafeHref(value);
+        return (href is null ? value : DisplayUrl(value), href);
     }
 
     private static string KindName(ContactKind kind) => kind.ToString().ToLowerInvariant();
