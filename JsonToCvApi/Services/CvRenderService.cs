@@ -68,26 +68,28 @@ public sealed class CvRenderService : ICvRenderService
         Languages = cv.Languages.Select(l => new { Name = Encode(l.Name), Level = Encode(l.Level) }).ToList(),
     };
 
-    private static List<object> BuildContactParts(ContactInfo contact)
+    private static List<object> BuildContactParts(IReadOnlyList<ContactItem> contact) =>
+        contact
+            .Where(item => !string.IsNullOrWhiteSpace(item.Value))
+            .OrderBy(item => item.Kind)
+            .Select(BuildContactPart)
+            .ToList();
+
+    private static object BuildContactPart(ContactItem item)
     {
-        var parts = new List<object>
-        {
-            new { Text = Encode(contact.Email), Href = SafeMailto(contact.Email) },
-            new { Text = Encode(contact.Location), Href = (string?)null },
-        };
+        var kind = KindName(item.Kind);
+        var label = string.IsNullOrWhiteSpace(item.Label) ? null : Encode(item.Label);
 
-        if (!string.IsNullOrWhiteSpace(contact.Phone))
-        {
-            parts.Add(new { Text = Encode(contact.Phone), Href = SafeTel(contact.Phone) });
-        }
+        if (item.Kind == ContactKind.Email) return new { Kind = kind, Text = label ?? Encode(item.Value), Href = SafeMailto(item.Value) };
+        if (item.Kind == ContactKind.Phone) return new { Kind = kind, Text = label ?? Encode(item.Value), Href = SafeTel(item.Value) };
+        if (item.Kind == ContactKind.Address) return new { Kind = kind, Text = label ?? Encode(item.Value), Href = (string?)null };
 
-        if (!string.IsNullOrWhiteSpace(contact.LinkedInUrl) && SafeHref(contact.LinkedInUrl) is { } href)
-        {
-            parts.Add(new { Text = Encode(DisplayUrl(contact.LinkedInUrl)), Href = href });
-        }
-
-        return parts;
+        // Only shorten to a link label when it really is a link; anything else shows verbatim.
+        var href = SafeHref(item.Value);
+        return new { Kind = kind, Text = label ?? Encode(href is null ? item.Value : DisplayUrl(item.Value)), Href = href };
     }
+
+    private static string KindName(ContactKind kind) => kind.ToString().ToLowerInvariant();
 
     private static string FormatMonthRange(DateOnly start, DateOnly? end) =>
         $"{start.ToString("MMMM yyyy", DisplayCulture)} – " +

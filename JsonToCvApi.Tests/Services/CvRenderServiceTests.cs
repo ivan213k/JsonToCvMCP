@@ -59,7 +59,13 @@ public class CvRenderServiceTests : IAsyncLifetime
         var cv = new CvData(
             FullName: "Jane Doe",
             Headline: "Engineer",
-            Contact: new ContactInfo(Email: "jane@example.com", Location: "Nowhere"),
+            Contact:
+            [
+                new ContactItem(ContactKind.Email, "jane@example.com"),
+                new ContactItem(ContactKind.Address, "Nowhere"),
+                // Whitespace-only label must fall back to the derived text, not render blank.
+                new ContactItem(ContactKind.Link, "https://jane.example", Label: "   "),
+            ],
             Summary: "Summary text.",
             Skills: ["C#"],
             Experience:
@@ -91,7 +97,13 @@ public class CvRenderServiceTests : IAsyncLifetime
         var cv = new CvData(
             FullName: "<script>alert(1)</script>",
             Headline: "R&D",
-            Contact: new ContactInfo(Email: "a@b.com", Location: "X"),
+            Contact:
+            [
+                new ContactItem(ContactKind.Email, "a@b.com"),
+                new ContactItem(ContactKind.Linkedin, "javascript:alert(1)"),
+                // A label is free text like any other field, so it goes through the same encoding.
+                new ContactItem(ContactKind.Link, "https://x.example", Label: "<b>Site</b> & co"),
+            ],
             Summary: "S & T",
             Skills: [],
             Experience: [],

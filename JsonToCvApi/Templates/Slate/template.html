@@ -37,7 +37,7 @@
   }
 
   .headline {
-    font-size: 11.5pt;
+    font-size: 12.5pt;
     font-weight: 700;
     color: #3D4042;
     letter-spacing: 0.03em;
@@ -46,7 +46,7 @@
   }
 
   .contact-line {
-    font-size: 9.3pt;
+    font-size: 10.5pt;
     color: #4a4f52;
   }
 
@@ -58,6 +58,26 @@
   .contact-line .sep {
     color: #b9bdbf;
     margin: 0 2mm;
+  }
+
+  /* Icons are inline SVG so they inherit the text colour and survive PDF export as vectors. */
+  .contact-line .icon {
+    width: 3.1mm;
+    height: 3.1mm;
+    vertical-align: -0.55mm;
+    margin-right: 1.1mm;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* Brand marks are solid glyphs, not stroked outlines. Must come after .icon: same specificity,
+     so source order is what lets it win. */
+  .contact-line .icon-solid {
+    fill: currentColor;
+    stroke: none;
   }
 
   header .rule {
@@ -109,9 +129,25 @@
 
   /* ---- Experience / education entries ---- */
 
+  /* Experience entries are long enough that keeping one whole strands most of a page, so they may
+     split. The rules below keep the split tidy: never fewer than two lines either side of a break,
+     and the role/company head stays with the body that follows it. */
   .entry {
-    break-inside: avoid;
+    break-inside: auto;
+    orphans: 2;
+    widows: 2;
     margin-bottom: 4.2mm;
+  }
+
+  .entry-head,
+  .entry-org {
+    break-after: avoid;
+  }
+
+  .entry li,
+  .entry-project,
+  .entry-tech {
+    break-inside: avoid;
   }
 
   .entry:last-child { margin-bottom: 0; }
@@ -130,27 +166,27 @@
   }
 
   .entry-meta {
-    font-size: 9.3pt;
+    font-size: 10.3pt;
     color: #6b7178;
     white-space: nowrap;
   }
 
   .entry-org {
-    font-size: 9.7pt;
+    font-size: 10.3pt;
     color: #4a4f52;
     margin-top: 0.3mm;
   }
 
   .entry-project {
     margin: 1.8mm 0 0;
-    font-size: 9.7pt;
+    font-size: 10.3pt;
     color: #33383b;
   }
 
   .entry-project strong { color: #22262a; }
 
   .entry ul {
-    margin: 1.8mm 0 0;
+    margin: 1.8mm 0 0 5mm;
     padding-left: 4.2mm;
   }
 
@@ -159,12 +195,12 @@
 
   .entry-tech {
     margin: 2mm 0 0;
-    font-size: 8.9pt;
-    color: #6b7178;
+    font-size: 10.3pt;
+    color: #22262a;
   }
 
   .entry-tech strong {
-    color: #4a4f52;
+    color: #22262a;
     font-weight: 700;
   }
 
@@ -179,12 +215,12 @@
 
   .edu-degree {
     font-weight: 700;
-    font-size: 10.1pt;
+    font-size: 10.3pt;
     color: #22262a;
   }
 
   .edu-meta {
-    font-size: 9.3pt;
+    font-size: 9.5pt;
     color: #4a4f52;
     margin-top: 0.3mm;
   }
@@ -198,13 +234,13 @@
 
   .cert-name {
     font-weight: 700;
-    font-size: 10pt;
+    font-size: 10.3pt;
     color: #22262a;
   }
 
   .cert-link {
     display: block;
-    font-size: 8.9pt;
+    font-size: 9.3pt;
     color: #4a4f52;
     margin-top: 0.5mm;
     word-break: break-all;
@@ -218,10 +254,27 @@
     <h1 class="name">{{ FullName }}</h1>
     <div class="headline">{{ Headline }}</div>
     <div class="contact-line">
-      {{ for part in ContactParts }}
-      {{ if !for.first }}<span class="sep">&middot;</span>{{ end }}
-      {{ if part.Href }}<a href="{{ part.Href }}">{{ part.Text }}</a>{{ else }}<span>{{ part.Text }}</span>{{ end }}
-      {{ end }}
+      {{~ for part in ContactParts ~}}
+      {{~ if !for.first }}<span class="sep">&middot;</span> {{ end ~}}
+      {{~ if part.Href }}<a href="{{ part.Href }}">{{ end ~}}
+      {{~ if part.Kind == "email" ~}}
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4.5" width="20" height="15" rx="2"/><path d="m2.7 6 9.3 6.4L21.3 6"/></svg>
+      {{~ else if part.Kind == "address" ~}}
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10.2c0 5.8-8 11.8-8 11.8s-8-6-8-11.8a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="2.9"/></svg>
+      {{~ else if part.Kind == "phone" ~}}
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.4 2.5H4.1A2 2 0 0 0 2.1 4.7C2.1 13.6 10.4 21.9 19.3 21.9a2 2 0 0 0 2.2-2v-4.3a1 1 0 0 0-.8-1l-4-.8a1 1 0 0 0-1 .4l-1.4 1.9a15.6 15.6 0 0 1-6.4-6.4l1.9-1.4a1 1 0 0 0 .4-1l-.8-4a1 1 0 0 0-1-.8Z"/></svg>
+      {{~ else if part.Kind == "linkedin" ~}}
+      <svg class="icon icon-solid" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.42v1.56h.04c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13Zm1.78 13.02H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0Z"/></svg>
+      {{~ else if part.Kind == "github" ~}}
+      <svg class="icon icon-solid" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.83-.26.83-.58l-.02-2.04c-3.33.73-4.04-1.6-4.04-1.6-.55-1.4-1.34-1.77-1.34-1.77-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.07 1.83 2.81 1.3 3.5 1 .1-.78.42-1.3.76-1.6-2.67-.31-5.47-1.34-5.47-5.94 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.11-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.29-1.23 3.29-1.23.65 1.66.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22l-.01 3.29c0 .32.21.69.82.57A12 12 0 0 0 12 .3Z"/></svg>
+      {{~ else if part.Kind == "social" ~}}
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="2.8"/><circle cx="6" cy="12" r="2.8"/><circle cx="18" cy="19" r="2.8"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg>
+      {{~ else ~}}{{# Deliberate fallback: any kind the caller invents ("website", "telegram") gets the link icon. #}}
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.2 13.3a4.8 4.8 0 0 0 7.2.5l2.9-2.9a4.8 4.8 0 0 0-6.8-6.8l-1.6 1.7"/><path d="M13.8 10.7a4.8 4.8 0 0 0-7.2-.5l-2.9 2.9a4.8 4.8 0 0 0 6.8 6.8l1.6-1.7"/></svg>
+      {{~ end ~}}
+      {{~ part.Text ~}}
+      {{~ if part.Href }}</a>{{ end ~}}
+      {{~ end ~}}
     </div>
     <hr class="rule">
   </header>
