@@ -59,7 +59,7 @@ public class CvRenderServiceTests : IAsyncLifetime
         var cv = new CvData(
             FullName: "Jane Doe",
             Headline: "Engineer",
-            Contact: new ContactInfo(Email: "jane@example.com", Location: "Nowhere"),
+            Contact: [new ContactItem(ContactKinds.Email, "jane@example.com"), new ContactItem(ContactKinds.Address, "Nowhere")],
             Summary: "Summary text.",
             Skills: ["C#"],
             Experience:
@@ -91,7 +91,7 @@ public class CvRenderServiceTests : IAsyncLifetime
         var cv = new CvData(
             FullName: "<script>alert(1)</script>",
             Headline: "R&D",
-            Contact: new ContactInfo(Email: "a@b.com", Location: "X"),
+            Contact: [new ContactItem(ContactKinds.Email, "a@b.com"), new ContactItem(ContactKinds.Address, "X")],
             Summary: "S & T",
             Skills: [],
             Experience: [],
