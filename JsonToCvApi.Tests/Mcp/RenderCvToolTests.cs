@@ -1,4 +1,5 @@
 using JsonToCvApi.Configuration;
+using JsonToCvApi.Localization;
 using JsonToCvApi.Mcp;
 using JsonToCvApi.Models;
 using JsonToCvApi.Services;
@@ -18,7 +19,7 @@ public class RenderCvToolTests : IAsyncLifetime
 
     public Task InitializeAsync()
     {
-        _renderService = new CvRenderService(_pdfRenderer);
+        _renderService = new CvRenderService(_pdfRenderer, new CvLocalizationProvider());
 
         var services = new ServiceCollection();
         services.AddFusionCache();

@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Net;
 using System.Net.Mail;
+using JsonToCvApi.Localization;
 using JsonToCvApi.Models;
 using JsonToCvApi.Templates;
 using Scriban;
@@ -9,16 +10,23 @@ namespace JsonToCvApi.Services;
 
 public sealed class CvRenderService : ICvRenderService
 {
-    private static readonly CultureInfo DisplayCulture = CultureInfo.GetCultureInfo("en-US");
     private static readonly Template ScribanTemplate = ParseTemplate();
 
     private readonly IPdfRenderer _pdfRenderer;
+    private readonly ICvLocalizationProvider _localization;
 
-    public CvRenderService(IPdfRenderer pdfRenderer) => _pdfRenderer = pdfRenderer;
-
-    public async Task<byte[]> RenderToPdfAsync(CvData cv, CancellationToken cancellationToken = default)
+    public CvRenderService(IPdfRenderer pdfRenderer, ICvLocalizationProvider localization)
     {
-        string html = ScribanTemplate.Render(BuildViewModel(cv), member => member.Name);
+        _pdfRenderer = pdfRenderer;
+        _localization = localization;
+    }
+
+    public async Task<byte[]> RenderToPdfAsync(
+        CvData cv, CvLanguage language = CvLanguage.En, CancellationToken cancellationToken = default)
+    {
+        var culture = _localization.GetCulture(language);
+        var labels = _localization.GetLabels(language);
+        string html = ScribanTemplate.Render(BuildViewModel(cv, culture, labels), member => member.Name);
         return await _pdfRenderer.RenderToPdfAsync(html, cancellationToken);
     }
 
@@ -34,18 +42,19 @@ public sealed class CvRenderService : ICvRenderService
         return template;
     }
 
-    private static object BuildViewModel(CvData cv) => new
+    private static object BuildViewModel(CvData cv, CultureInfo culture, CvLabels labels) => new
     {
         FullName = Encode(cv.FullName),
         Headline = Encode(cv.Headline),
         ContactParts = BuildContactParts(cv.Contact),
         Summary = Encode(cv.Summary),
         Skills = cv.Skills.Select(Encode).ToList(),
+        Labels = labels,
         Experience = cv.Experience.Select(e => new
         {
             Role = Encode(e.Role),
             Company = Encode(e.Company),
-            DateRange = FormatMonthRange(e.StartDate, e.EndDate),
+            DateRange = FormatMonthRange(e.StartDate, e.EndDate, culture, labels),
             ProjectName = e.ProjectName is null ? null : Encode(e.ProjectName),
             ProjectDescription = e.ProjectDescription is null ? null : Encode(e.ProjectDescription),
             Highlights = e.Highlights.Select(Encode).ToList(),
@@ -61,7 +70,7 @@ public sealed class CvRenderService : ICvRenderService
         Certifications = (cv.Certifications ?? []).Select(c => new
         {
             Name = Encode(c.Name),
-            IssuedDisplay = c.IssuedDate.ToString("MMMM yyyy", DisplayCulture),
+            IssuedDisplay = c.IssuedDate.ToString("MMMM yyyy", culture),
             Url = SafeHref(c.Url),
             UrlDisplay = c.Url is null ? null : Encode(DisplayUrl(c.Url)),
         }).ToList(),
@@ -105,9 +114,9 @@ public sealed class CvRenderService : ICvRenderService
 
     private static string KindName(ContactKind kind) => kind.ToString().ToLowerInvariant();
 
-    private static string FormatMonthRange(DateOnly start, DateOnly? end) =>
-        $"{start.ToString("MMMM yyyy", DisplayCulture)} – " +
-        $"{(end is { } e ? e.ToString("MMMM yyyy", DisplayCulture) : "Present")}";
+    private static string FormatMonthRange(DateOnly start, DateOnly? end, CultureInfo culture, CvLabels labels) =>
+        $"{start.ToString("MMMM yyyy", culture)} – " +
+        $"{(end is { } e ? e.ToString("MMMM yyyy", culture) : labels.Present)}";
 
     /// <summary>Strips scheme/query for a clean, human-readable link label; the full URL stays in href.</summary>
     private static string DisplayUrl(string url) =>

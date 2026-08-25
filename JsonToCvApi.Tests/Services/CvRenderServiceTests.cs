@@ -1,4 +1,5 @@
 using System.Text.Json;
+using JsonToCvApi.Localization;
 using JsonToCvApi.Models;
 using JsonToCvApi.Services;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -21,7 +22,7 @@ public class CvRenderServiceTests : IAsyncLifetime
 
     public Task InitializeAsync()
     {
-        _renderService = new CvRenderService(_pdfRenderer);
+        _renderService = new CvRenderService(_pdfRenderer, new CvLocalizationProvider());
         return Task.CompletedTask;
     }
 
@@ -84,6 +85,40 @@ public class CvRenderServiceTests : IAsyncLifetime
         Assert.Null(cv.Certifications);
 
         var pdf = await _renderService.RenderToPdfAsync(cv);
+
+        Assert.Equal("%PDF-"u8.ToArray(), pdf.Take(5));
+    }
+
+    [Theory]
+    [InlineData(CvLanguage.De)]
+    [InlineData(CvLanguage.Ua)]
+    [InlineData(CvLanguage.Ru)]
+    [InlineData(CvLanguage.Es)]
+    public async Task Renders_MinimalCv_InEachSupportedLanguage(CvLanguage language)
+    {
+        // Not a content check (Chromium's PDF text stream isn't trivially greppable, per the other
+        // tests in this file) — just that every language in CvLocalization renders without throwing
+        // a KeyNotFoundException from a missing dictionary entry and still produces a valid PDF.
+        var cv = new CvData(
+            FullName: "Jane Doe",
+            Headline: "Engineer",
+            Contact: [new ContactItem(ContactKind.Email, "jane@example.com")],
+            Summary: "Summary text.",
+            Skills: ["C#"],
+            Experience:
+            [
+                new ExperienceEntry(
+                    Role: "Developer",
+                    Company: "Acme",
+                    StartDate: new DateOnly(2020, 1, 1),
+                    EndDate: null,
+                    Highlights: [],
+                    Technologies: [])
+            ],
+            Education: [],
+            Languages: [new LanguageEntry("English", "Native")]);
+
+        var pdf = await _renderService.RenderToPdfAsync(cv, language);
 
         Assert.Equal("%PDF-"u8.ToArray(), pdf.Take(5));
     }

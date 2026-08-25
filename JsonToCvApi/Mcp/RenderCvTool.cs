@@ -11,7 +11,7 @@ public static class RenderCvTool
 {
     [McpServerTool(Name = "render_cv")]
     [Description("""
-        Renders a CV to PDF from the hardcoded "Slate" template and returns a URL to fetch it. 
+        Renders a CV to PDF from the hardcoded "Slate" template and returns a URL to fetch it.
         The URL expires; see `expiresAt` on the response. Same underlying render/cache as
         `POST /api/cv/render` and `GET /api/cv/{id}`.
         """)]
@@ -20,9 +20,13 @@ public static class RenderCvTool
         IRenderedCvStore store,
         IHttpContextAccessor httpContextAccessor,
         [Description("The CV content to render.")] CvData cv,
+        [Description("""
+            Language for the template's own headings/labels and month names — en, de, ua, ru, or es.
+            Defaults to en. CV content itself is rendered as supplied, not translated.
+            """)] CvLanguage language = CvLanguage.En,
         CancellationToken cancellationToken = default)
     {
-        var pdf = await renderService.RenderToPdfAsync(cv, cancellationToken);
+        var pdf = await renderService.RenderToPdfAsync(cv, language, cancellationToken);
         var (id, expiresAt) = await store.StoreAsync(pdf, cancellationToken);
 
         var request = httpContextAccessor.HttpContext!.Request;

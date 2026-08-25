@@ -15,6 +15,9 @@ public static class CvEndpoint
                 headless Chromium. Returns a URL the PDF can be fetched from (`GET /api/cv/{id}`), not the
                 PDF bytes themselves — a several-hundred-KB body isn't something every caller wants inline.
                 The PDF is cached in memory and the URL expires; see `expiresAt` on the response.
+                Accepts an optional `language` query parameter (`en`, `de`, `ua`, `ru`, `es`; defaults to
+                `en`) that translates the template's own headings/labels and month names — CV content
+                itself is rendered as supplied, not translated.
                 """)
             .Produces<RenderedCvResponse>()
             .ProducesValidationProblem();

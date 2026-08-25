@@ -1,6 +1,7 @@
 using JsonToCvApi.Configuration;
 using JsonToCvApi.Endpoints.Cv;
 using JsonToCvApi.Endpoints.Health;
+using JsonToCvApi.Localization;
 using JsonToCvApi.Services;
 using ModelContextProtocol.Protocol;
 using ZiggyCreatures.Caching.Fusion;
@@ -38,6 +39,7 @@ builder.Services.AddFusionCache()
     .WithDefaultEntryOptions(new FusionCacheEntryOptions { Duration = cachingOptions.RenderedCvDuration });
 
 builder.Services.AddSingleton<IPdfRenderer, PdfRenderer>();
+builder.Services.AddSingleton<ICvLocalizationProvider, CvLocalizationProvider>();
 builder.Services.AddSingleton<ICvRenderService, CvRenderService>();
 builder.Services.AddSingleton<IRenderedCvStore, RenderedCvStore>();
 
