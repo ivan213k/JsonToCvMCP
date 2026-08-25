@@ -60,6 +60,10 @@
     margin: 0 2mm;
   }
 
+  .contact-line .contact-item {
+    white-space: nowrap;
+  }
+
   /* Icons are inline SVG so they inherit the text colour and survive PDF export as vectors. */
   .contact-line .icon {
     width: 3.1mm;
@@ -255,7 +259,7 @@
     <div class="headline">{{ Headline }}</div>
     <div class="contact-line">
       {{~ for part in ContactParts ~}}
-      {{~ if !for.first }}<span class="sep">&middot;</span> {{ end ~}}
+      {{~ if !for.first }}<span class="sep">&middot;</span> {{ end ~}}<span class="contact-item">
       {{~ if part.Href }}<a href="{{ part.Href }}">{{ end ~}}
       {{~ if part.Kind == "email" ~}}
       <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4.5" width="20" height="15" rx="2"/><path d="m2.7 6 9.3 6.4L21.3 6"/></svg>
@@ -273,7 +277,7 @@
       <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.2 13.3a4.8 4.8 0 0 0 7.2.5l2.9-2.9a4.8 4.8 0 0 0-6.8-6.8l-1.6 1.7"/><path d="M13.8 10.7a4.8 4.8 0 0 0-7.2-.5l-2.9 2.9a4.8 4.8 0 0 0 6.8 6.8l1.6-1.7"/></svg>
       {{~ end ~}}
       {{~ part.Text ~}}
-      {{~ if part.Href }}</a>{{ end ~}}
+      {{~ if part.Href }}</a>{{ end ~}}</span>
       {{~ end ~}}
     </div>
     <hr class="rule">
