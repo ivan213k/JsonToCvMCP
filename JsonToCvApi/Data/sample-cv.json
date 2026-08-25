@@ -1,12 +1,14 @@
 {
   "fullName": "Alex Morgan",
   "headline": ".NET Software Engineer",
-  "contact": {
-    "email": "alex.morgan@example.com",
-    "location": "Berlin, Germany",
-    "phone": "+15550100",
-    "linkedInUrl": "https://www.linkedin.com/in/alex-morgan-dev/"
-  },
+  "contact": [
+    { "kind": "email", "value": "alex.morgan@example.com" },
+    { "kind": "address", "value": "Berlin, Germany" },
+    { "kind": "phone", "value": "+15550100" },
+    { "kind": "linkedin", "value": "https://www.linkedin.com/in/alex-morgan-dev/" },
+    { "kind": "github", "value": "https://github.com/alex-morgan" },
+    { "kind": "link", "label": "Portfolio", "value": "https://alex-morgan.dev" }
+  ],
   "summary": ".NET Software Engineer with over 4 years of professional experience building backend systems on the .NET platform. Comfortable writing complex SQL Server queries and designing RESTful APIs with ASP.NET Core. Practical experience with microservice architectures and cloud-native development on Azure. Skilled in containerizing and orchestrating services with Docker and Kubernetes, and in building and maintaining CI/CD pipelines with Azure DevOps.",
   "skills": [
     "C#",

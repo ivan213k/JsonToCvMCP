@@ -36,7 +36,7 @@ public class RenderCvToolTests : IAsyncLifetime
         var cv = new CvData(
             FullName: "Jane Doe",
             Headline: "Engineer",
-            Contact: new ContactInfo(Email: "jane@example.com", Location: "Nowhere"),
+            Contact: [new ContactItem(ContactKind.Email, "jane@example.com")],
             Summary: "Summary text.",
             Skills: ["C#"],
             Experience: [],

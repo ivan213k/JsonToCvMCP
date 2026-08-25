@@ -68,26 +68,42 @@ public sealed class CvRenderService : ICvRenderService
         Languages = cv.Languages.Select(l => new { Name = Encode(l.Name), Level = Encode(l.Level) }).ToList(),
     };
 
-    private static List<object> BuildContactParts(ContactInfo contact)
+    private static List<object> BuildContactParts(IReadOnlyList<ContactItem> contact) =>
+        contact
+            .Where(item => !string.IsNullOrWhiteSpace(item.Value))
+            .OrderBy(item => item.Kind)
+            .Select(BuildContactPart)
+            .ToList();
+
+    private static object BuildContactPart(ContactItem item)
     {
-        var parts = new List<object>
+        var (text, href) = PartBuilders.GetValueOrDefault(item.Kind, DisplayAsLink)(item.Value);
+        return new
         {
-            new { Text = Encode(contact.Email), Href = SafeMailto(contact.Email) },
-            new { Text = Encode(contact.Location), Href = (string?)null },
+            Kind = KindName(item.Kind),
+            Text = Encode(string.IsNullOrWhiteSpace(item.Label) ? text : item.Label),
+            Href = href,
         };
-
-        if (!string.IsNullOrWhiteSpace(contact.Phone))
-        {
-            parts.Add(new { Text = Encode(contact.Phone), Href = SafeTel(contact.Phone) });
-        }
-
-        if (!string.IsNullOrWhiteSpace(contact.LinkedInUrl) && SafeHref(contact.LinkedInUrl) is { } href)
-        {
-            parts.Add(new { Text = Encode(DisplayUrl(contact.LinkedInUrl)), Href = href });
-        }
-
-        return parts;
     }
+
+    private static readonly Dictionary<ContactKind, Func<string, (string Text, string? Href)>> PartBuilders = new()
+    {
+        [ContactKind.Address] = value => (value, null),
+        [ContactKind.Email] = value => (value, SafeMailto(value)),
+        [ContactKind.Phone] = value => (value, SafeTel(value)),
+        [ContactKind.Link] = DisplayAsLink,
+        [ContactKind.Linkedin] = DisplayAsLink,
+        [ContactKind.Github] = DisplayAsLink,
+        [ContactKind.Social] = DisplayAsLink,
+    };
+
+    private static (string Text, string? Href) DisplayAsLink(string value)
+    {
+        var href = SafeHref(value);
+        return (href is null ? value : DisplayUrl(value), href);
+    }
+
+    private static string KindName(ContactKind kind) => kind.ToString().ToLowerInvariant();
 
     private static string FormatMonthRange(DateOnly start, DateOnly? end) =>
         $"{start.ToString("MMMM yyyy", DisplayCulture)} – " +
