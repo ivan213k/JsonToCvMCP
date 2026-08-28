@@ -75,6 +75,18 @@ public sealed class CvRenderService : ICvRenderService
             UrlDisplay = c.Url is null ? null : Encode(DisplayUrl(c.Url)),
         }).ToList(),
         Languages = cv.Languages.Select(l => new { Name = Encode(l.Name), Level = Encode(l.Level) }).ToList(),
+        Projects = (cv.Projects ?? []).Select(p => new
+        {
+            Name = Encode(p.Name),
+            Description = p.Description is null ? null : Encode(p.Description),
+            DateRange = FormatProjectDateRange(p.StartDate, p.EndDate, labels),
+            Technologies = (p.Technologies ?? []).Select(Encode).ToList(),
+            Repositories = (p.Repositories ?? []).Select(r => new
+            {
+                Name = Encode(r.Name),
+                Href = SafeHref(r.Url),
+            }).ToList(),
+        }).ToList(),
     };
 
     private static List<object> BuildContactParts(IReadOnlyList<ContactItem> contact) =>
@@ -117,6 +129,14 @@ public sealed class CvRenderService : ICvRenderService
     private static string FormatMonthRange(DateOnly start, DateOnly? end, CultureInfo culture, CvLabels labels) =>
         $"{start.ToString("MMMM yyyy", culture)} – " +
         $"{(end is { } e ? e.ToString("MMMM yyyy", culture) : labels.Present)}";
+
+    /// <summary>Year-only range (projects rarely warrant month precision); omitted entirely when no start date is given.</summary>
+    private static string? FormatProjectDateRange(DateOnly? start, DateOnly? end, CvLabels labels)
+    {
+        if (start is not { } s) return null;
+        if (end is { } e) return e.Year == s.Year ? $"{s.Year}" : $"{s.Year} – {e.Year}";
+        return $"{s.Year} – {labels.Present}";
+    }
 
     /// <summary>Strips scheme/query for a clean, human-readable link label; the full URL stays in href.</summary>
     private static string DisplayUrl(string url) =>

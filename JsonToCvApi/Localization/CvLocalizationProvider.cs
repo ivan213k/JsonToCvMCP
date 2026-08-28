@@ -14,19 +14,24 @@ public sealed class CvLocalizationProvider : ICvLocalizationProvider
     {
         [CvLanguage.En] = new(
             Summary: "Summary", Skills: "Skills", Experience: "Experience", Education: "Education",
-            Certifications: "Certifications", Languages: "Languages", Present: "Present", Project: "Project", Technologies: "Technologies"),
+            Certifications: "Certifications", Languages: "Languages", Present: "Present", Project: "Project",
+            Projects: "Projects", Repositories: "Repositories", Technologies: "Technologies"),
         [CvLanguage.De] = new(
             Summary: "Zusammenfassung", Skills: "Kenntnisse", Experience: "Berufserfahrung", Education: "Ausbildung",
-            Certifications: "Zertifizierungen", Languages: "Sprachen", Present: "Aktuell", Project: "Projekt", Technologies: "Technologien"),
+            Certifications: "Zertifizierungen", Languages: "Sprachen", Present: "Aktuell", Project: "Projekt",
+            Projects: "Projekte", Repositories: "Repositories", Technologies: "Technologien"),
         [CvLanguage.Ua] = new(
             Summary: "Резюме", Skills: "Навички", Experience: "Досвід роботи", Education: "Освіта",
-            Certifications: "Сертифікати", Languages: "Мови", Present: "Дотепер", Project: "Проєкт", Technologies: "Технології"),
+            Certifications: "Сертифікати", Languages: "Мови", Present: "Дотепер", Project: "Проєкт",
+            Projects: "Проєкти", Repositories: "Репозиторії", Technologies: "Технології"),
         [CvLanguage.Ru] = new(
             Summary: "Резюме", Skills: "Навыки", Experience: "Опыт работы", Education: "Образование",
-            Certifications: "Сертификаты", Languages: "Языки", Present: "По настоящее время", Project: "Проект", Technologies: "Технологии"),
+            Certifications: "Сертификаты", Languages: "Языки", Present: "По настоящее время", Project: "Проект",
+            Projects: "Проекты", Repositories: "Репозитории", Technologies: "Технологии"),
         [CvLanguage.Es] = new(
             Summary: "Resumen", Skills: "Habilidades", Experience: "Experiencia", Education: "Educación",
-            Certifications: "Certificaciones", Languages: "Idiomas", Present: "Presente", Project: "Proyecto", Technologies: "Tecnologías"),
+            Certifications: "Certificaciones", Languages: "Idiomas", Present: "Presente", Project: "Proyecto",
+            Projects: "Proyectos", Repositories: "Repositorios", Technologies: "Tecnologías"),
     };
 
     private static readonly Dictionary<CvLanguage, CultureInfo> CultureByLanguage = new()

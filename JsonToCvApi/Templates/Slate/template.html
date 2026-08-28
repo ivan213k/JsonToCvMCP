@@ -204,6 +204,12 @@
     font-weight: 700;
   }
 
+  .entry-project a,
+  .entry-tech a {
+    color: #22262a;
+    text-decoration: underline;
+  }
+
   /* ---- Education (lighter entries, no bullets) ---- */
 
   .edu-entry {
@@ -323,6 +329,38 @@
     </div>
     {{ end }}
   </section>
+
+  {{ if Projects.size > 0 }}
+  <section>
+    <h2>{{ Labels.Projects }}</h2>
+
+    {{ for proj in Projects }}
+    <div class="entry">
+      <div class="entry-head">
+        <span class="entry-role">{{ proj.Name }}</span>
+        {{ if proj.DateRange }}<span class="entry-meta">{{ proj.DateRange }}</span>{{ end }}
+      </div>
+      {{ if proj.Description }}
+      <p class="entry-project">{{ proj.Description }}</p>
+      {{ end }}
+      {{ if proj.Repositories.size > 0 }}
+      <p class="entry-tech">
+        <strong>{{ Labels.Repositories }}:</strong>
+        {{~ for repo in proj.Repositories ~}}
+        {{~ if repo.Href }}<a href="{{ repo.Href }}">{{ repo.Name }}</a>{{ else }}{{ repo.Name }}{{ end ~}}
+        {{~ if !for.last }}, {{ end ~}}
+        {{~ end ~}}
+      </p>
+      {{ end }}
+      {{ if proj.Technologies.size > 0 }}
+      <p class="entry-tech">
+        <strong>{{ Labels.Technologies }}:</strong> {{ for t in proj.Technologies }}{{ t }}{{ if !for.last }}, {{ end }}{{ end }}
+      </p>
+      {{ end }}
+    </div>
+    {{ end }}
+  </section>
+  {{ end }}
 
   <section>
     <h2>{{ Labels.Education }}</h2>

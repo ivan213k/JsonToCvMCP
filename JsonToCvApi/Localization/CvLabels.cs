@@ -9,4 +9,6 @@ public sealed record CvLabels(
     string Languages,
     string Present,
     string Project,
+    string Projects,
+    string Repositories,
     string Technologies);
