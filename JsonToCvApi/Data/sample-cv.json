@@ -107,6 +107,31 @@
       "endDate": "2019-06-01"
     }
   ],
+  "projects": [
+    {
+      "name": "Agentic Job-Search Pipeline — .NET MCP Servers",
+      "description": "A set of ASP.NET Core services exposing the same functionality over both REST and the Model Context Protocol (MCP), so LLM agents can call them as tools. Built to production standards rather than as a demo: unit tests, containerization, CI/CD and observability throughout.",
+      "startDate": "2026-01-01",
+      "technologies": [
+        ".NET 10",
+        "ASP.NET Core",
+        "ModelContextProtocol.AspNetCore",
+        "FusionCache",
+        "Redis",
+        "OpenTelemetry",
+        "Playwright",
+        "Scriban",
+        "xUnit",
+        "Moq",
+        "Docker",
+        "GitHub Actions"
+      ],
+      "repositories": [
+        { "name": "Jobs Provider", "url": "https://github.com/alex-morgan/jobs-provider-mcp" },
+        { "name": "JSON to CV", "url": "https://github.com/alex-morgan/json-to-cv-mcp" }
+      ]
+    }
+  ],
   "certifications": [
     {
       "name": "AZ-900 — Microsoft Certified: Azure Fundamentals",

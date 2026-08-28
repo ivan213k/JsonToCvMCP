@@ -13,7 +13,8 @@ public record CvData(
     IReadOnlyList<ExperienceEntry> Experience,
     IReadOnlyList<EducationEntry> Education,
     IReadOnlyList<LanguageEntry> Languages,
-    IReadOnlyList<CertificationEntry>? Certifications = null);
+    IReadOnlyList<CertificationEntry>? Certifications = null,
+    IReadOnlyList<ProjectEntry>? Projects = null);
 
 public record ContactItem(
     [property: Description(ContactDescriptions.Kind)] ContactKind Kind,
@@ -66,6 +67,18 @@ public record CertificationEntry(
 public record LanguageEntry(
     string Name,
     string Level);
+
+public record ProjectEntry(
+    string Name,
+    string? Description = null,
+    DateOnly? StartDate = null,
+    DateOnly? EndDate = null,
+    IReadOnlyList<string>? Technologies = null,
+    IReadOnlyList<ProjectRepository>? Repositories = null);
+
+public record ProjectRepository(
+    string Name,
+    string? Url = null);
 
 public sealed class ContactKindConverter()
     : JsonStringEnumConverter<ContactKind>(namingPolicy: JsonNamingPolicy.CamelCase, allowIntegerValues: false);
