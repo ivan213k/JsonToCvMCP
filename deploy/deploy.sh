@@ -13,7 +13,9 @@ fi
 
 IMAGE="ivan213k/jsontocvapi"
 CONTAINER_NAME="jsontocvapi"
+NETWORK_NAME="jobsprovider-net"
 HOST_PORT="${HOST_PORT:-8080}"
+OTEL_EXPORTER_OTLP_ENDPOINT="${OTEL_EXPORTER_OTLP_ENDPOINT-http://aspire-dashboard:18889}"
 
 latest_version_tag() {
     curl -fsSL "https://hub.docker.com/v2/repositories/${IMAGE}/tags?page_size=100" \
@@ -34,10 +36,14 @@ docker pull "$IMAGE:$VERSION"
 
 docker rm -f "$CONTAINER_NAME" >/dev/null 2>&1 || true
 
+docker network create "$NETWORK_NAME" >/dev/null 2>&1 || true
+
 docker run -d \
     --name "$CONTAINER_NAME" \
     --restart unless-stopped \
+    --network "$NETWORK_NAME" \
     -p "${HOST_PORT}:8080" \
+    ${OTEL_EXPORTER_OTLP_ENDPOINT:+-e "OTEL_EXPORTER_OTLP_ENDPOINT=$OTEL_EXPORTER_OTLP_ENDPOINT"} \
     "$IMAGE:$VERSION"
 
 echo "$VERSION" > "$state_file"

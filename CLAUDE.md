@@ -123,8 +123,15 @@ These were settled up front; don't re-litigate them without being asked.
 
 ## CI and deployment
 
-Patterned on `JobsProviderMCP`'s setup, minus what doesn't apply here (no Redis, so no `deploy/redis/`;
-no OpenTelemetry yet, so no `docker-compose.otel.yml`).
+Patterned on `JobsProviderMCP`'s setup, minus what doesn't apply here (no Redis, so no `deploy/redis/`).
+
+- **Telemetry (`Configuration/TelemetrySetup.cs`)** — OpenTelemetry logging/tracing/metrics exported via
+  `UseOtlpExporter()` (ASP.NET Core + HttpClient + runtime + FusionCache instrumentation). Ships to a
+  shared OTLP collector rather than one dedicated to this app, so there's no `docker-compose.otel.yml`
+  here — `deploy/deploy.sh` joins the `jobsprovider-net` Docker network and defaults
+  `OTEL_EXPORTER_OTLP_ENDPOINT` to `http://aspire-dashboard:18889`, overridable via `deploy/.env`. Local
+  dev points at `http://localhost:4317` via `appsettings.Development.json`. Services are told apart by
+  the `AddService("JsonToCvApi", ...)` resource name.
 
 - **`.github/workflows/pr-validation.yml`** — restore, build, test on every PR. **One real difference
   from `JobsProviderMCP`'s copy of this workflow**: this project's tests render actual PDFs through

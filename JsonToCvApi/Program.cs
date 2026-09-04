@@ -16,6 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 var semanticVersion = Environment.GetEnvironmentVariable("SemanticVersion") ?? "dev";
 
+builder.AddTelemetry(semanticVersion);
 builder.Services.AddVersionedOpenApi(semanticVersion);
 builder.Services.AddValidation();
 builder.Services.AddHttpContextAccessor();
