@@ -4,12 +4,15 @@ using System.Net.Mail;
 using JsonToCvApi.Localization;
 using JsonToCvApi.Models;
 using JsonToCvApi.Templates;
+using PdfSharp.Pdf.IO;
 using Scriban;
 
 namespace JsonToCvApi.Services;
 
 public sealed class CvRenderService : ICvRenderService
 {
+    private const int MaxKeywordsInDocumentInfo = 3;
+
     private static readonly Template ScribanTemplate = ParseTemplate();
 
     private readonly IPdfRenderer _pdfRenderer;
@@ -21,13 +24,52 @@ public sealed class CvRenderService : ICvRenderService
         _localization = localization;
     }
 
-    public async Task<byte[]> RenderToPdfAsync(
+    public async Task<RenderedCv> RenderToPdfAsync(
         CvData cv, CvLanguage language = CvLanguage.En, CancellationToken cancellationToken = default)
     {
         var culture = _localization.GetCulture(language);
         var labels = _localization.GetLabels(language);
         string html = ScribanTemplate.Render(BuildViewModel(cv, culture, labels), member => member.Name);
-        return await _pdfRenderer.RenderToPdfAsync(html, cancellationToken);
+        byte[] pdfBytes = await _pdfRenderer.RenderToPdfAsync(html, cancellationToken);
+        var renderedCv = new RenderedCv(pdfBytes, GetFileName(cv));
+
+        PdfDocumentMetaData metadata = BuildDocumentMetadata(cv);
+        return ApplyMetadata(renderedCv, metadata);
+    }
+
+    /// <summary>"Jane Doe" → "Jane_Doe_CV.pdf". Keeps letters (any script), digits and hyphens only.</summary>
+    private static string GetFileName(CvData cv)
+    {
+        var parts = cv.FullName
+            .Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries)
+            .Select(part => new string(part.Where(c => char.IsLetterOrDigit(c) || c == '-').ToArray()))
+            .Where(part => part.Length > 0)
+            .Append("CV");
+        return $"{string.Join('_', parts)}.pdf";
+    }
+
+    private static PdfDocumentMetaData BuildDocumentMetadata(CvData cv)
+    {
+        return new PdfDocumentMetaData(
+            Title: $"{cv.FullName} – {cv.Headline}",
+            Author: cv.FullName,
+            Subject: cv.Headline,
+            Keywords: string.Join(", ", cv.Skills.Take(MaxKeywordsInDocumentInfo)));
+    }
+
+    private static RenderedCv ApplyMetadata(RenderedCv cv, PdfDocumentMetaData metadata)
+    {
+        using var input = new MemoryStream(cv.Pdf);
+        using var document = PdfReader.Open(input, PdfDocumentOpenMode.Modify);
+
+        document.Info.Title = metadata.Title;
+        document.Info.Author = metadata.Author;
+        document.Info.Subject = metadata.Subject;
+        document.Info.Keywords = metadata.Keywords;
+
+        using var output = new MemoryStream();
+        document.Save(output);
+        return cv with { Pdf = output.ToArray() };
     }
 
     private static Template ParseTemplate()

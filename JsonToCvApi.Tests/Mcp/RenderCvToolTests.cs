@@ -58,8 +58,9 @@ public class RenderCvToolTests : IAsyncLifetime
         Assert.True(response.ExpiresAt > DateTimeOffset.UtcNow);
 
         var id = Guid.Parse(response.Url.Split('/')[^1]);
-        var storedPdf = await _store.TryGetAsync(id);
-        Assert.NotNull(storedPdf);
-        Assert.Equal("%PDF-"u8.ToArray(), storedPdf!.Take(5));
+        var stored = await _store.TryGetAsync(id);
+        Assert.NotNull(stored);
+        Assert.Equal("%PDF-"u8.ToArray(), stored!.Pdf.Take(5));
+        Assert.Equal("Jane_Doe_CV.pdf", stored.FileName);
     }
 }

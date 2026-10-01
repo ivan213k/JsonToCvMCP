@@ -9,7 +9,7 @@ internal static class GetCvHandler
         IRenderedCvStore store,
         CancellationToken cancellationToken)
     {
-        var pdf = await store.TryGetAsync(id, cancellationToken);
-        return pdf is null ? Results.NotFound() : Results.File(pdf, "application/pdf", "cv.pdf");
+        var cv = await store.TryGetAsync(id, cancellationToken);
+        return cv is null ? Results.NotFound() : Results.File(cv.Pdf, "application/pdf", cv.FileName);
     }
 }

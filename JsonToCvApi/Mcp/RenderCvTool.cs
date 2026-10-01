@@ -26,8 +26,8 @@ public static class RenderCvTool
             """)] CvLanguage language = CvLanguage.En,
         CancellationToken cancellationToken = default)
     {
-        var pdf = await renderService.RenderToPdfAsync(cv, language, cancellationToken);
-        var (id, expiresAt) = await store.StoreAsync(pdf, cancellationToken);
+        var renderedCv = await renderService.RenderToPdfAsync(cv, language, cancellationToken);
+        var (id, expiresAt) = await store.StoreAsync(renderedCv, cancellationToken);
 
         var request = httpContextAccessor.HttpContext!.Request;
         return new RenderedCvResponse(CvUrlBuilder.Build(request, id), expiresAt);
