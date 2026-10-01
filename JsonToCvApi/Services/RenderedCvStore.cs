@@ -21,15 +21,15 @@ public sealed class RenderedCvStore : IRenderedCvStore
         _duration = options.Value.RenderedCvDuration;
     }
 
-    public async Task<(Guid Id, DateTimeOffset ExpiresAt)> StoreAsync(byte[] pdf, CancellationToken cancellationToken = default)
+    public async Task<(Guid Id, DateTimeOffset ExpiresAt)> StoreAsync(RenderedCv cv, CancellationToken cancellationToken = default)
     {
         var id = Guid.NewGuid();
-        await _cache.SetAsync(CacheKey(id), pdf, _duration, token: cancellationToken);
+        await _cache.SetAsync(CacheKey(id), cv, _duration, token: cancellationToken);
         return (id, DateTimeOffset.UtcNow.Add(_duration));
     }
 
-    public async Task<byte[]?> TryGetAsync(Guid id, CancellationToken cancellationToken = default) =>
-        (await _cache.TryGetAsync<byte[]>(CacheKey(id), token: cancellationToken)).GetValueOrDefault();
+    public async Task<RenderedCv?> TryGetAsync(Guid id, CancellationToken cancellationToken = default) =>
+        (await _cache.TryGetAsync<RenderedCv>(CacheKey(id), token: cancellationToken)).GetValueOrDefault();
 
     private static string CacheKey(Guid id) => $"cv:{id}";
 }

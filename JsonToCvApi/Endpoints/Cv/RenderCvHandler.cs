@@ -13,8 +13,8 @@ internal static class RenderCvHandler
         string? language = null,
         CancellationToken cancellationToken = default)
     {
-        var pdf = await renderService.RenderToPdfAsync(cv, CvLanguageParser.Parse(language), cancellationToken);
-        var (id, expiresAt) = await store.StoreAsync(pdf, cancellationToken);
+        var renderedCv = await renderService.RenderToPdfAsync(cv, CvLanguageParser.Parse(language), cancellationToken);
+        var (id, expiresAt) = await store.StoreAsync(renderedCv, cancellationToken);
 
         return Results.Ok(new RenderedCvResponse(CvUrlBuilder.Build(request, id), expiresAt));
     }

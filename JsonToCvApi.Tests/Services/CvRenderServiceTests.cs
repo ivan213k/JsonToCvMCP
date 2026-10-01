@@ -34,7 +34,7 @@ public class CvRenderServiceTests : IAsyncLifetime
         var json = await File.ReadAllTextAsync(SampleCvPath);
         var cv = JsonSerializer.Deserialize<CvData>(json, new JsonSerializerOptions(JsonSerializerDefaults.Web))!;
 
-        var pdf = await _renderService.RenderToPdfAsync(cv);
+        var pdf = (await _renderService.RenderToPdfAsync(cv)).Pdf;
 
         Assert.Equal("%PDF-"u8.ToArray(), pdf.Take(5));
 
@@ -84,7 +84,7 @@ public class CvRenderServiceTests : IAsyncLifetime
 
         Assert.Null(cv.Certifications);
 
-        var pdf = await _renderService.RenderToPdfAsync(cv);
+        var pdf = (await _renderService.RenderToPdfAsync(cv)).Pdf;
 
         Assert.Equal("%PDF-"u8.ToArray(), pdf.Take(5));
     }
@@ -118,7 +118,7 @@ public class CvRenderServiceTests : IAsyncLifetime
             Education: [],
             Languages: [new LanguageEntry("English", "Native")]);
 
-        var pdf = await _renderService.RenderToPdfAsync(cv, language);
+        var pdf = (await _renderService.RenderToPdfAsync(cv, language)).Pdf;
 
         Assert.Equal("%PDF-"u8.ToArray(), pdf.Take(5));
     }
@@ -146,8 +146,47 @@ public class CvRenderServiceTests : IAsyncLifetime
             Certifications: [],
             Languages: []);
 
-        var pdf = await _renderService.RenderToPdfAsync(cv);
+        var pdf = (await _renderService.RenderToPdfAsync(cv)).Pdf;
 
         Assert.Equal("%PDF-"u8.ToArray(), pdf.Take(5));
+    }
+
+    [Fact]
+    public async Task NamesTheDocument_AfterTheCvOwner()
+    {
+        // Browser PDF viewers title the tab from /Title, not the file name, so a generic "CV" title
+        // survives any rename of the downloaded file.
+        var cv = new CvData(
+            FullName: "Тарас Захарук",
+            Headline: "Software Engineer",
+            Contact: [new ContactItem(ContactKind.Email, "t@example.com")],
+            Summary: "Summary text.",
+            Skills: ["C#", ".NET"],
+            Experience: [],
+            Education: [],
+            Languages: [new LanguageEntry("English", "Fluent")]);
+
+        var rendered = await _renderService.RenderToPdfAsync(cv);
+
+        Assert.Equal("Тарас_Захарук_CV.pdf", rendered.FileName);
+
+        using var document = PdfSharp.Pdf.IO.PdfReader.Open(
+            new MemoryStream(rendered.Pdf), PdfSharp.Pdf.IO.PdfDocumentOpenMode.Import);
+        Assert.Equal("Тарас Захарук – Software Engineer", document.Info.Title);
+        Assert.Equal("Тарас Захарук", document.Info.Author);
+        Assert.Equal("Software Engineer", document.Info.Subject);
+        Assert.Equal("C#, .NET", document.Info.Keywords);
+    }
+
+    [Theory]
+    [InlineData("Jane Doe", "Jane_Doe_CV.pdf")]
+    [InlineData("  Mary-Jane   O'Neil ", "Mary-Jane_ONeil_CV.pdf")]
+    [InlineData("../../etc/passwd", "etcpasswd_CV.pdf")]
+    [InlineData("<>", "CV.pdf")]
+    public void FileName_IsDerivedFromFullName_AndSafe(string fullName, string expected)
+    {
+        var cv = new CvData(fullName, "", [], "", [], [], [], []);
+
+        Assert.Equal(expected, CvDocumentNaming.FileName(cv));
     }
 }

@@ -21,13 +21,14 @@ public sealed class CvRenderService : ICvRenderService
         _localization = localization;
     }
 
-    public async Task<byte[]> RenderToPdfAsync(
+    public async Task<RenderedCv> RenderToPdfAsync(
         CvData cv, CvLanguage language = CvLanguage.En, CancellationToken cancellationToken = default)
     {
         var culture = _localization.GetCulture(language);
         var labels = _localization.GetLabels(language);
         string html = ScribanTemplate.Render(BuildViewModel(cv, culture, labels), member => member.Name);
-        return await _pdfRenderer.RenderToPdfAsync(html, cancellationToken);
+        var pdf = await _pdfRenderer.RenderToPdfAsync(html, cancellationToken);
+        return new RenderedCv(CvDocumentNaming.ApplyMetadata(pdf, cv), CvDocumentNaming.FileName(cv));
     }
 
     private static Template ParseTemplate()

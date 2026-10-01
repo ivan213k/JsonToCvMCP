@@ -19,15 +19,17 @@ public class RenderedCvStoreTests
     }
 
     [Fact]
-    public async Task StoreThenGet_ReturnsTheSameBytes()
+    public async Task StoreThenGet_ReturnsTheSameBytesAndFileName()
     {
         var store = CreateStore();
-        byte[] pdf = [1, 2, 3, 4];
+        var cv = new RenderedCv([1, 2, 3, 4], "Jane_Doe_CV.pdf");
 
-        var (id, expiresAt) = await store.StoreAsync(pdf);
+        var (id, expiresAt) = await store.StoreAsync(cv);
         var fetched = await store.TryGetAsync(id);
 
-        Assert.Equal(pdf, fetched);
+        Assert.NotNull(fetched);
+        Assert.Equal(cv.Pdf, fetched!.Pdf);
+        Assert.Equal(cv.FileName, fetched.FileName);
         Assert.True(expiresAt > DateTimeOffset.UtcNow);
     }
 
@@ -45,7 +47,7 @@ public class RenderedCvStoreTests
     public async Task Get_ExpiredEntry_ReturnsNull()
     {
         var store = CreateStore(duration: TimeSpan.FromMilliseconds(1));
-        var (id, _) = await store.StoreAsync([1, 2, 3]);
+        var (id, _) = await store.StoreAsync(new RenderedCv([1, 2, 3], "CV.pdf"));
 
         await Task.Delay(50);
         var fetched = await store.TryGetAsync(id);
