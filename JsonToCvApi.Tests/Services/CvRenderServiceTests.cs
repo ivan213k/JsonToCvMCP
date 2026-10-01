@@ -183,10 +183,12 @@ public class CvRenderServiceTests : IAsyncLifetime
     [InlineData("  Mary-Jane   O'Neil ", "Mary-Jane_ONeil_CV.pdf")]
     [InlineData("../../etc/passwd", "etcpasswd_CV.pdf")]
     [InlineData("<>", "CV.pdf")]
-    public void FileName_IsDerivedFromFullName_AndSafe(string fullName, string expected)
+    public async Task FileName_IsDerivedFromFullName_AndSafe(string fullName, string expected)
     {
         var cv = new CvData(fullName, "", [], "", [], [], [], []);
 
-        Assert.Equal(expected, CvDocumentNaming.FileName(cv));
+        var rendered = await _renderService.RenderToPdfAsync(cv);
+
+        Assert.Equal(expected, rendered.FileName);
     }
 }
